@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TXT文件繁体转简体转换器</title>
+    <title>TXT繁简转换器</title>
     <script src="https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.min.js"></script>
     <style>
         :root {
@@ -15,26 +15,32 @@
             --text-light: #FFFFFF;
         }
         
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            max-width: 100%;
+            margin: 0;
             padding: 20px;
             line-height: 1.6;
             background: linear-gradient(135deg, #FFF5F5 0%, #FFEEEE 100%);
             min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
         }
         
         h1 {
             color: var(--text-dark);
             text-align: center;
             font-weight: 600;
-            font-size: 2.2rem;
-            margin-bottom: 30px;
+            font-size: clamp(1.8rem, 5vw, 2.2rem);
+            margin: 0 0 25px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
             position: relative;
             display: inline-block;
-            padding-bottom: 10px;
+            width: 100%;
+            padding-bottom: 12px;
         }
         
         h1:after {
@@ -50,24 +56,26 @@
         }
         
         .container {
-            background-color: white;
+            background-color: rgba(255, 255, 255, 0.9);
             border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(255, 154, 162, 0.2);
+            padding: 25px 20px;
+            box-shadow: 0 8px 32px rgba(255, 154, 162, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(5px);
-            margin-top: 20px;
+            margin: 0 auto;
+            max-width: 800px;
+            width: 100%;
         }
         
         h3 {
             color: var(--text-dark);
             font-weight: 500;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
+            margin: 0 0 12px;
+            font-size: 1.1rem;
         }
         
         .file-upload {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             text-align: center;
         }
         
@@ -85,17 +93,27 @@
             transition: all 0.3s ease;
             font-weight: 500;
             box-shadow: 0 4px 15px rgba(255, 154, 162, 0.3);
+            font-size: 1rem;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
         }
         
-        .file-upload label:hover {
-            background: var(--secondary-pink);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 154, 162, 0.4);
+        .file-upload label:active {
+            transform: scale(0.98);
+        }
+        
+        .file-info {
+            font-size: 0.9rem;
+            color: #888;
+            margin-top: 8px;
+            text-align: center;
+            word-break: break-all;
         }
         
         textarea {
             width: 100%;
-            height: 200px;
+            height: 150px;
             margin-top: 10px;
             padding: 15px;
             border: 2px solid var(--light-pink);
@@ -105,6 +123,7 @@
             transition: all 0.3s ease;
             background-color: rgba(255, 255, 255, 0.8);
             box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+            min-height: 120px;
         }
         
         textarea:focus {
@@ -113,28 +132,42 @@
             box-shadow: 0 0 0 3px rgba(255, 154, 162, 0.2);
         }
         
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
         button {
             background: linear-gradient(45deg, var(--primary-pink) 0%, var(--secondary-pink) 100%);
             color: white;
             border: none;
-            padding: 12px 28px;
+            padding: 14px;
             text-align: center;
             text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 20px 0;
+            font-size: 1rem;
             cursor: pointer;
             border-radius: 50px;
             transition: all 0.3s ease;
             font-weight: 500;
             box-shadow: 0 4px 15px rgba(255, 154, 162, 0.3);
             width: 100%;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 154, 162, 0.4);
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        button svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
         }
         
         .download-btn {
@@ -142,15 +175,11 @@
             box-shadow: 0 4px 15px rgba(110, 142, 251, 0.3);
         }
         
-        .download-btn:hover {
-            box-shadow: 0 8px 25px rgba(110, 142, 251, 0.4);
-        }
-        
         .hidden {
             display: none;
         }
         
-        /* 添加一些装饰元素 */
+        /* 装饰元素 */
         .decoration {
             position: fixed;
             width: 200px;
@@ -158,34 +187,58 @@
             border-radius: 50%;
             background: radial-gradient(circle, rgba(255,214,214,0.6) 0%, rgba(255,214,214,0) 70%);
             z-index: -1;
+            pointer-events: none;
         }
         
         .decoration-1 {
             top: -50px;
             right: -50px;
-            width: 300px;
-            height: 300px;
+            width: min(300px, 80vw);
+            height: min(300px, 80vw);
         }
         
         .decoration-2 {
             bottom: -80px;
             left: -80px;
-            width: 400px;
-            height: 400px;
+            width: min(400px, 100vw);
+            height: min(400px, 100vw);
         }
         
-        /* 响应式调整 */
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
+        /* 加载动画 */
+        .loader {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 移动端优化 */
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
             }
             
-            h1 {
-                font-size: 1.8rem;
+            .container {
+                padding: 20px 15px;
+                border-radius: 12px;
             }
             
             textarea {
-                height: 150px;
+                height: 120px;
+                padding: 12px;
+                font-size: 15px;
+            }
+            
+            button {
+                padding: 12px;
+                font-size: 0.95rem;
             }
         }
     </style>
@@ -196,47 +249,72 @@
     <div class="decoration decoration-2"></div>
     
     <div class="container">
-        <h1>TXT文件繁体转简体转换器</h1>
+        <h1>TXT繁简转换器</h1>
         
         <div class="file-upload">
-            <h3>1. 上传TXT文件</h3>
-            <label for="fileInput">选择文件</label>
+            <label for="fileInput">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+                选择TXT文件
+            </label>
             <input type="file" id="fileInput" accept=".txt">
+            <div id="fileInfo" class="file-info hidden"></div>
         </div>
         
         <div>
-            <h3>2. 原始内容（繁体）</h3>
-            <textarea id="originalText" readonly></textarea>
+            <h3>原始内容（繁体）</h3>
+            <textarea id="originalText" placeholder="文件内容将显示在这里..." readonly></textarea>
         </div>
         
-        <button id="convertBtn">转换为简体</button>
+        <div class="button-group">
+            <button id="convertBtn">
+                <div class="loader" id="convertLoader"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/>
+                </svg>
+                转换为简体
+            </button>
+            
+            <button id="downloadBtn" class="download-btn hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                </svg>
+                下载简体文件
+            </button>
+        </div>
         
         <div>
-            <h3>3. 转换结果（简体）</h3>
-            <textarea id="convertedText" readonly></textarea>
+            <h3>转换结果（简体）</h3>
+            <textarea id="convertedText" placeholder="转换结果将显示在这里..." readonly></textarea>
         </div>
-        
-        <button id="downloadBtn" class="download-btn hidden">下载转换后的文件</button>
     </div>
 
     <script>
         const { createConverter } = OpenCC;
         const converter = createConverter('t2s.json');
         
+        // DOM元素
         const fileInput = document.getElementById('fileInput');
         const originalText = document.getElementById('originalText');
         const convertedText = document.getElementById('convertedText');
         const convertBtn = document.getElementById('convertBtn');
         const downloadBtn = document.getElementById('downloadBtn');
+        const fileInfo = document.getElementById('fileInfo');
+        const convertLoader = document.getElementById('convertLoader');
         
-        let currentFileName = '';
+        let currentFile = null;
         
         // 文件上传处理
         fileInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
             
-            currentFileName = file.name.replace('.txt', '') + '_简体.txt';
+            currentFile = file;
+            
+            // 显示文件信息
+            fileInfo.textContent = `已选择: ${file.name} (${(file.size / 1024).toFixed(1)}KB)`;
+            fileInfo.classList.remove('hidden');
             
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -244,18 +322,41 @@
                 convertedText.value = '';
                 downloadBtn.classList.add('hidden');
             };
+            reader.onerror = function() {
+                alert('文件读取失败，请重试');
+                resetFileInput();
+            };
             reader.readAsText(file, 'UTF-8');
         });
         
         // 转换按钮点击处理
-        convertBtn.addEventListener('click', function() {
+        convertBtn.addEventListener('click', async function() {
             if (!originalText.value) {
                 alert('请先上传TXT文件');
                 return;
             }
             
-            convertedText.value = converter(originalText.value);
-            downloadBtn.classList.remove('hidden');
+            // 显示加载动画
+            convertLoader.style.display = 'block';
+            convertBtn.disabled = true;
+            
+            // 模拟异步转换（实际转换是同步的，这里为了展示加载效果）
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            try {
+                convertedText.value = converter(originalText.value);
+                downloadBtn.classList.remove('hidden');
+                
+                // 自动滚动到结果区域
+                setTimeout(() => {
+                    convertedText.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            } catch (error) {
+                alert('转换失败: ' + error.message);
+            } finally {
+                convertLoader.style.display = 'none';
+                convertBtn.disabled = false;
+            }
         });
         
         // 下载按钮点击处理
@@ -267,15 +368,41 @@
             
             const a = document.createElement('a');
             a.href = url;
-            a.download = currentFileName;
+            a.download = currentFile ? 
+                `${currentFile.name.replace(/\.[^/.]+$/, '')}_简体.txt` : 
+                'converted_text.txt';
+            
+            // 添加振动反馈（仅支持移动设备）
+            if ('vibrate' in navigator) {
+                navigator.vibrate(50);
+            }
+            
             document.body.appendChild(a);
             a.click();
             
             setTimeout(() => {
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
-            }, 0);
+            }, 100);
         });
+        
+        // 重置文件输入
+        function resetFileInput() {
+            fileInput.value = '';
+            fileInfo.classList.add('hidden');
+            originalText.value = '';
+            convertedText.value = '';
+            downloadBtn.classList.add('hidden');
+            currentFile = null;
+        }
+        
+        // 防止页面滚动时装饰元素闪烁
+        document.addEventListener('scroll', function() {
+            const decorations = document.querySelectorAll('.decoration');
+            decorations.forEach(dec => {
+                dec.style.transform = `translateY(${window.scrollY * 0.5}px)`;
+            });
+        }, { passive: true });
     </script>
 </body>
 </html>
