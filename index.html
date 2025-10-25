@@ -3,6 +3,510 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>空白网页</title>
+    <title>GitHub图片画廊</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .folder-filter {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .filter-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .folder-indicator {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 20px 0;
+        }
+        
+        .image-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+            height: 380px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .image-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+        
+        .image-container {
+            height: 250px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .image-card:hover .image-container img {
+            transform: scale(1.1);
+        }
+        
+        .image-info {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .image-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .image-folder {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .image-folder i {
+            color: #fdbb2d;
+        }
+        
+        .image-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 1.5rem;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 15px;
+        }
+        
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.3rem;
+            grid-column: 1 / -1;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 15px;
+            }
+            
+            .image-card {
+                height: 350px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .search-box {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>GitHub图片画廊</h1>
+            <p class="subtitle">自动扫描并显示GitHub仓库中所有文件夹里的图片</p>
+        </header>
+        
+        <div class="controls">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="搜索图片名称或文件夹...">
+            </div>
+            
+            <div class="folder-filter">
+                <button class="filter-btn active" data-folder="all">全部图片</button>
+                <button class="filter-btn" data-folder="nature">自然风景</button>
+                <button class="filter-btn" data-folder="portraits">人物肖像</button>
+                <button class="filter-btn" data-folder="architecture">建筑艺术</button>
+                <span class="folder-indicator" id="folderIndicator">当前文件夹: 全部</span>
+            </div>
+        </div>
+        
+        <div class="gallery" id="imageGallery">
+            <div class="loading">
+                <div class="spinner"></div>
+                <span>正在扫描GitHub仓库中的图片...</span>
+            </div>
+        </div>
+        
+        <footer>
+            <p>GitHub图片画廊 &copy; 2023 | 支持文件夹结构，自动扫描所有图片</p>
+        </footer>
+    </div>
+
+    <script>
+        // 配置信息 - 请修改为您的GitHub信息
+        const config = {
+            username: 'pipiorange030',  // 替换为您的GitHub用户名
+            repo: 'photoroom-public',   // 替换为您的图片仓库名
+            branch: 'main'              // 替换为您的分支名
+        };
+        
+        // 使用jsDelivr CDN构建图片URL
+        function getImageUrl(path) {
+            return `https://cdn.jsdelivr.net/gh/${config.username}/${config.repo}@${config.branch}/${path}`;
+        }
+        
+        // 从文件夹路径提取分类信息
+        function getCategoryFromPath(path) {
+            const folders = path.split('/');
+            // 移除文件名，只保留文件夹路径
+            folders.pop();
+            
+            if (folders.length === 0) return '根目录';
+            
+            // 返回最上层文件夹作为分类
+            return folders[0];
+        }
+        
+        // 模拟从GitHub API获取的图片数据（包含文件夹结构）
+       /* const mockImagesWithFolders = [
+            // nature文件夹中的图片
+            { name: 'mountain-sunrise.jpg', path: 'nature/landscapes/mountain-sunrise.jpg', size: '2.4 MB' },
+            { name: 'forest-waterfall.png', path: 'nature/forests/forest-waterfall.png', size: '3.1 MB' },
+            { name: 'ocean-sunset.jpg', path: 'nature/seascapes/ocean-sunset.jpg', size: '2.8 MB' },
+            { name: 'autumn-trees.jpg', path: 'nature/seasons/autumn-trees.jpg', size: '2.2 MB' },
+            
+            // portraits文件夹中的图片
+            { name: 'professional-portrait.jpg', path: 'portraits/professional/professional-portrait.jpg', size: '1.9 MB' },
+            { name: 'casual-photo.png', path: 'portraits/casual/casual-photo.png', size: '2.1 MB' },
+            { name: 'group-photo.jpg', path: 'portraits/group/group-photo.jpg', size: '3.5 MB' },
+            { name: 'creative-shoot.jpg', path: 'portraits/creative/creative-shoot.jpg', size: '2.7 MB' },
+            
+            // architecture文件夹中的图片
+            { name: 'modern-building.jpg', path: 'architecture/modern/modern-building.jpg', size: '2.9 MB' },
+            { name: 'historical-monument.png', path: 'architecture/historical/historical-monument.png', size: '3.2 MB' },
+            { name: 'interior-design.jpg', path: 'architecture/interior/interior-design.jpg', size: '2.6 MB' },
+            { name: 'city-skylines.jpg', path: 'architecture/urban/city-skylines.jpg', size: '3.4 MB' },
+            
+            // 根目录的图片
+            { name: 'logo.png', path: 'logo.png', size: '0.8 MB' },
+            { name: 'banner.jpg', path: 'banner.jpg', size: '1.2 MB' }
+        ];*/
+        
+        // 获取所有唯一的文件夹分类
+        function getUniqueFolders(images) {
+            const folders = new Set();
+            folders.add('all'); // 添加"全部"选项
+            
+            images.forEach(image => {
+                const category = getCategoryFromPath(image.path);
+                folders.add(category);
+            });
+            
+            return Array.from(folders);
+        }
+        
+        // 渲染文件夹筛选按钮
+        function renderFolderFilters(folders) {
+            const filterContainer = document.querySelector('.folder-filter');
+            const existingButtons = filterContainer.querySelectorAll('.filter-btn:not([data-folder="all"])');
+            existingButtons.forEach(btn => btn.remove());
+            
+            folders.forEach(folder => {
+                if (folder !== 'all' && folder !== '根目录') {
+                    const button = document.createElement('button');
+                    button.className = 'filter-btn';
+                    button.dataset.folder = folder;
+                    button.textContent = folder;
+                    
+                    // 插入到"全部"按钮后面
+                    const allButton = filterContainer.querySelector('[data-folder="all"]');
+                    allButton.parentNode.insertBefore(button, allButton.nextSibling);
+                }
+            });
+        }
+        
+        // 渲染图片画廊
+        function renderGallery(images) {
+            const gallery = document.getElementById('imageGallery');
+            
+            if (images.length === 0) {
+                gallery.innerHTML = '<div class="no-results">没有找到匹配的图片</div>';
+                return;
+            }
+            
+            gallery.innerHTML = images.map(image => {
+                const category = getCategoryFromPath(image.path);
+                const folderName = category === '根目录' ? '根目录' : category;
+                
+                return `
+                    <div class="image-card" data-folder="${folderName}">
+                        <div class="image-container">
+                            <img src="${getImageUrl(image.path)}" alt="${image.name}" loading="lazy">
+                        </div>
+                        <div class="image-info">
+                            <div class="image-title">${image.name}</div>
+                            <div class="image-folder">
+                                <i class="fas fa-folder"></i>
+                                ${folderName}
+                            </div>
+                            <div class="image-details">
+                                <span>${image.size}</span>
+                                <span>${image.path}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 筛选图片
+        function filterImages() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const activeFolder = document.querySelector('.filter-btn.active').dataset.folder;
+            
+            // 更新文件夹指示器
+            document.getElementById('folderIndicator').textContent = 
+                `当前文件夹: ${activeFolder === 'all' ? '全部' : activeFolder}`;
+            
+            const filteredImages = mockImagesWithFolders.filter(image => {
+                const category = getCategoryFromPath(image.path);
+                const folderName = category === '根目录' ? '根目录' : category;
+                
+                const matchesSearch = image.name.toLowerCase().includes(searchTerm) || 
+                                     image.path.toLowerCase().includes(searchTerm);
+                const matchesFolder = activeFolder === 'all' || folderName === activeFolder;
+                
+                return matchesSearch && matchesFolder;
+            });
+            
+            renderGallery(filteredImages);
+        }
+        
+        // 初始化事件监听器
+        function initEventListeners() {
+            // 搜索框输入事件
+            document.getElementById('searchInput').addEventListener('input', filterImages);
+            
+            // 文件夹筛选按钮点击事件
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('filter-btn')) {
+                    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    filterImages();
+                }
+            });
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 模拟API加载延迟
+            setTimeout(() => {
+                // 获取文件夹分类并渲染筛选器
+                const folders = getUniqueFolders(mockImagesWithFolders);
+                renderFolderFilters(folders);
+                
+                // 渲染图片画廊
+                renderGallery(mockImagesWithFolders);
+                
+                // 初始化事件监听
+                initEventListeners();
+            }, 1500);
+        });
+        
+        // 实际使用时，取消注释以下函数来从GitHub API获取真实的图片列表
+        async function loadImagesFromGitHub() {
+            try {
+                const apiUrl = `https://api.github.com/repos/${config.username}/${config.repo}/git/trees/${config.branch}?recursive=1`;
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                
+                // 过滤出图片文件
+                const imageFiles = data.tree.filter(file => 
+                    file.path.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)
+                );
+                
+                // 转换为需要的格式
+                const images = imageFiles.map(file => ({
+                    name: file.path.split('/').pop(),
+                    path: file.path,
+                    size: file.size ? `${(file.size / 1024 / 1024).toFixed(1)} MB` : '未知大小'
+                }));
+                
+                return images;
+            } catch (error) {
+                console.error('从GitHub加载图片失败:', error);
+                return [];
+            }
+        }
+        
+        // 使用真实数据替换模拟数据
+        document.addEventListener('DOMContentLoaded', async function() {
+            const realImages = await loadImagesFromGitHub();
+            if (realImages.length > 0) {
+                const folders = getUniqueFolders(realImages);
+                renderFolderFilters(folders);
+                renderGallery(realImages);
+                initEventListeners();
+            }
+        });
+        */
+    </script>
 </body>
 </html>
