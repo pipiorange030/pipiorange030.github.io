@@ -3,510 +3,582 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub图片画廊</title>
+    <title>群成员展示 | 婵姐这大美妞就适合被诸葛法</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+        
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #e94560;
+            --accent-light: #ff7b9c;
+            --text-primary: #f5f5f7;
+            --text-secondary: #a1a1a6;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+        
         body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 20px;
+            overflow-x: hidden;
         }
-        
+        
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            padding: 0 20px;
         }
-        
-        header {
+        
+        /* 顶部标题区 */
+        .header {
             text-align: center;
-            padding: 40px 20px;
-            margin-bottom: 30px;
+            padding: 60px 0 40px;
+            position: relative;
         }
-        
-        h1 {
-            font-size: 3rem;
+        
+        .header:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+        
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 800;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -1px;
         }
-        
+        
         .subtitle {
             font-size: 1.2rem;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto;
+            color: var(--text-secondary);
+            font-weight: 300;
+            margin-bottom: 30px;
         }
-        
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 40px;
-            flex-wrap: wrap;
-        }
-        
-        .search-box {
-            position: relative;
-            width: 100%;
-            max-width: 500px;
-        }
-        
-        .search-box input {
-            width: 100%;
-            padding: 15px 20px 15px 50px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            color: white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .search-box input:focus {
-            outline: none;
-            background: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        .search-box i {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        .folder-filter {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .filter-btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 50px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .filter-btn:hover, .filter-btn.active {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-        
-        .folder-indicator {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-        }
-        
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-            padding: 20px 0;
-        }
-        
-        .image-card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            transition: all 0.4s ease;
-            backdrop-filter: blur(10px);
-            height: 380px;
+        
+        /* 群信息卡片 */
+        .group-info-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            max-width: 1000px;
+            margin: 0 auto 60px;
+            padding: 30px;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
         }
-        
-        .image-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        
+        .group-name {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
         }
-        
-        .image-container {
-            height: 250px;
-            overflow: hidden;
+        
+        .group-stats {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* 成员展示区 */
+        .members-section {
+            padding: 0 0 60px;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
             position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
         }
-        
-        .image-container img {
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+            border-radius: 3px;
+        }
+        
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .member-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .member-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: 0 15px 30px rgba(233, 69, 96, 0.2);
+        }
+        
+        .member-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #4a00e0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .member-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
         }
-        
-        .image-card:hover .image-container img {
-            transform: scale(1.1);
-        }
-        
-        .image-info {
-            padding: 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        
-        .image-title {
-            font-size: 1.2rem;
+        
+        .member-name {
+            font-size: 1.1rem;
             font-weight: 600;
-            margin-bottom: 10px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .image-folder {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .image-folder i {
-            color: #fdbb2d;
-        }
-        
-        .image-details {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-        
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 200px;
-            font-size: 1.5rem;
-        }
-        
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s linear infinite;
-            margin-right: 15px;
-        }
-        
-        @keyframes spin {
-            100% { transform: rotate(360deg); }
-        }
-        
-        .no-results {
             text-align: center;
-            padding: 50px;
-            font-size: 1.3rem;
-            grid-column: 1 / -1;
+            margin-bottom: 5px;
         }
-        
-        footer {
+        
+        .member-status {
+            font-size: 0.85rem;
+            color: var(--accent-light);
+            padding: 4px 12px;
+            background: rgba(233, 69, 96, 0.1);
+            border-radius: 20px;
+            margin-top: 5px;
+        }
+        
+        /* 特色成员高亮 */
+        .featured-member {
+            border: 2px solid var(--accent);
+            background: rgba(233, 69, 96, 0.05);
+        }
+        
+        .featured-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--accent);
+            color: white;
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+        
+        /* 群聊界面模拟 */
+        .chat-preview {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            max-width: 800px;
+            margin: 0 auto 60px;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .chat-time {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .chat-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .chat-members-count {
+            color: var(--accent);
+            font-weight: 700;
+        }
+        
+        .chat-messages {
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4a00e0, #8e2de2);
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .message-content {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 18px;
+            border-radius: 18px;
+            max-width: 70%;
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        
+        .highlight-message {
+            background: rgba(233, 69, 96, 0.2);
+            border-left: 3px solid var(--accent);
+        }
+        
+        /* 页脚 */
+        .footer {
             text-align: center;
             padding: 40px 0;
-            margin-top: 40px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-secondary);
             font-size: 0.9rem;
-            opacity: 0.8;
+            border-top: 1px solid var(--border-color);
+            margin-top: 40px;
         }
-        
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.2rem;
+        
+        /* 响应式设计 */
+        @media (max-width: 1100px) {
+            .members-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             }
-            
-            .gallery {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+        
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .group-name {
+                font-size: 1.8rem;
+            }
+            
+            .members-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 20px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .main-title {
+                font-size: 2rem;
+            }
+            
+            .group-info-card {
+                padding: 20px;
+            }
+            
+            .members-grid {
+                grid-template-columns: repeat(2, 1fr);
                 gap: 15px;
             }
-            
-            .image-card {
-                height: 350px;
+            
+            .group-stats {
+                flex-direction: column;
+                gap: 15px;
             }
         }
-        
-        @media (max-width: 480px) {
-            .gallery {
-                grid-template-columns: 1fr;
+        
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+        
+        /* 动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
-            
-            .controls {
-                flex-direction: column;
-                align-items: center;
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
-            
-            .search-box {
-                max-width: 100%;
-            }
+        }
+        
+        .fade-in {
+            animation: fadeInUp 0.6s ease forwards;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>GitHub图片画廊</h1>
-            <p class="subtitle">自动扫描并显示GitHub仓库中所有文件夹里的图片</p>
+        <!-- 顶部标题区 -->
+        <header class="header fade-in">
+            <h1 class="main-title">婵姐这大美妞就适合被诸葛赞美</h1>
+            <p class="subtitle">群成员专属展示 | 高端设计呈现</p>
         </header>
-        
-        <div class="controls">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="搜索图片名称或文件夹...">
+        
+        <!-- 群信息卡片 -->
+        <div class="group-info-card fade-in">
+            <h2 class="group-name">朱展信，要健康幸福</h2>
+            <div class="group-stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="member-count">21</span>
+                    <span class="stat-label">群成员</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">2026</span>
+                    <span class="stat-label">创建年份</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">活跃</span>
+                    <span class="stat-label">当前状态</span>
+                </div>
             </div>
-            
-            <div class="folder-filter">
-                <button class="filter-btn active" data-folder="all">全部图片</button>
-                <button class="filter-btn" data-folder="nature">自然风景</button>
-                <button class="filter-btn" data-folder="portraits">人物肖像</button>
-                <button class="filter-btn" data-folder="architecture">建筑艺术</button>
-                <span class="folder-indicator" id="folderIndicator">当前文件夹: 全部</span>
+            <p style="text-align: center; color: var(--text-secondary); max-width: 600px; line-height: 1.6;">
+                这是一个由21位成员组成的活跃社交群组，成员们拥有多样的兴趣和独特的个性。群聊名称"朱展信，要健康幸福"寄托了所有成员对彼此的美好祝愿。
+            </p>
+        </div>
+        
+        <!-- 成员展示区 -->
+        <section class="members-section">
+            <h2 class="section-title fade-in">群成员 (21人)</h2>
+            <div class="members-grid" id="membersContainer">
+                <!-- 成员将通过JavaScript动态生成 -->
+            </div>
+        </section>
+        
+        <!-- 群聊界面模拟 -->
+        <div class="chat-preview fade-in">
+            <div class="chat-header">
+                <div class="chat-time">14:37</div>
+                <div class="chat-title">群聊 · <span class="chat-members-count">21人</span></div>
+                <div style="width: 60px;"></div> <!-- 占位用于平衡布局 -->
+            </div>
+            <div class="chat-messages">
+                <div class="message">
+                    <div class="message-avatar" style="background: linear-gradient(135deg, #ff7e5f, #feb47b);"></div>
+                    <div class="message-content">
+                        <div class="message-sender">搭上A...</div>
+                        <div>今天天气真好！</div>
+                    </div>
+                </div>
+                <div class="message">
+                    <div class="message-avatar" style="background: linear-gradient(135deg, #8e2de2, #4a00e0);"></div>
+                    <div class="message-content">
+                        <div class="message-sender">小香猪...</div>
+                        <div>晚上一起吃饭吗？</div>
+                    </div>
+                </div>
+                <div class="message">
+                    <div class="message-avatar" style="background: linear-gradient(135deg, var(--accent), #ff7b9c);"></div>
+                    <div class="message-content highlight-message">
+                        <div class="message-sender">婵姐这...</div>
+                        <div>婵姐这大美妞就适合被诸葛赞美！</div>
+                    </div>
+                </div>
+                <div class="message">
+                    <div class="message-avatar" style="background: linear-gradient(135deg, #00b09b, #96c93d);"></div>
+                    <div class="message-content">
+                        <div class="message-sender">Jackey...</div>
+                        <div>完全同意！婵姐最美！</div>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <div class="gallery" id="imageGallery">
-            <div class="loading">
-                <div class="spinner"></div>
-                <span>正在扫描GitHub仓库中的图片...</span>
-            </div>
-        </div>
-        
-        <footer>
-            <p>GitHub图片画廊 &copy; 2023 | 支持文件夹结构，自动扫描所有图片</p>
+        
+        <!-- 页脚 -->
+        <footer class="footer fade-in">
+            <p>高端群成员展示界面 | 基于现代设计美学构建 | 2026年5月</p>
+            <p style="margin-top: 10px; font-size: 0.8rem; color: rgba(255, 255, 255, 0.4);">设计灵感来源于简洁、现代的UI/UX设计趋势</p>
         </footer>
     </div>
-
+    
     <script>
-        // 配置信息 - 请修改为您的GitHub信息
-        const config = {
-            username: 'pipiorange030',  // 替换为您的GitHub用户名
-            repo: 'photoroom-public',   // 替换为您的图片仓库名
-            branch: 'main'              // 替换为您的分支名
-        };
-        
-        // 使用jsDelivr CDN构建图片URL
-        function getImageUrl(path) {
-            return `https://cdn.jsdelivr.net/gh/${config.username}/${config.repo}@${config.branch}/${path}`;
-        }
-        
-        // 从文件夹路径提取分类信息
-        function getCategoryFromPath(path) {
-            const folders = path.split('/');
-            // 移除文件名，只保留文件夹路径
-            folders.pop();
-            
-            if (folders.length === 0) return '根目录';
-            
-            // 返回最上层文件夹作为分类
-            return folders[0];
-        }
-        
-        // 模拟从GitHub API获取的图片数据（包含文件夹结构）
-       /* const mockImagesWithFolders = [
-            // nature文件夹中的图片
-            { name: 'mountain-sunrise.jpg', path: 'nature/landscapes/mountain-sunrise.jpg', size: '2.4 MB' },
-            { name: 'forest-waterfall.png', path: 'nature/forests/forest-waterfall.png', size: '3.1 MB' },
-            { name: 'ocean-sunset.jpg', path: 'nature/seascapes/ocean-sunset.jpg', size: '2.8 MB' },
-            { name: 'autumn-trees.jpg', path: 'nature/seasons/autumn-trees.jpg', size: '2.2 MB' },
-            
-            // portraits文件夹中的图片
-            { name: 'professional-portrait.jpg', path: 'portraits/professional/professional-portrait.jpg', size: '1.9 MB' },
-            { name: 'casual-photo.png', path: 'portraits/casual/casual-photo.png', size: '2.1 MB' },
-            { name: 'group-photo.jpg', path: 'portraits/group/group-photo.jpg', size: '3.5 MB' },
-            { name: 'creative-shoot.jpg', path: 'portraits/creative/creative-shoot.jpg', size: '2.7 MB' },
-            
-            // architecture文件夹中的图片
-            { name: 'modern-building.jpg', path: 'architecture/modern/modern-building.jpg', size: '2.9 MB' },
-            { name: 'historical-monument.png', path: 'architecture/historical/historical-monument.png', size: '3.2 MB' },
-            { name: 'interior-design.jpg', path: 'architecture/interior/interior-design.jpg', size: '2.6 MB' },
-            { name: 'city-skylines.jpg', path: 'architecture/urban/city-skylines.jpg', size: '3.4 MB' },
-            
-            // 根目录的图片
-            { name: 'logo.png', path: 'logo.png', size: '0.8 MB' },
-            { name: 'banner.jpg', path: 'banner.jpg', size: '1.2 MB' }
-        ];*/
-        
-        // 获取所有唯一的文件夹分类
-        function getUniqueFolders(images) {
-            const folders = new Set();
-            folders.add('all'); // 添加"全部"选项
-            
-            images.forEach(image => {
-                const category = getCategoryFromPath(image.path);
-                folders.add(category);
-            });
-            
-            return Array.from(folders);
-        }
-        
-        // 渲染文件夹筛选按钮
-        function renderFolderFilters(folders) {
-            const filterContainer = document.querySelector('.folder-filter');
-            const existingButtons = filterContainer.querySelectorAll('.filter-btn:not([data-folder="all"])');
-            existingButtons.forEach(btn => btn.remove());
-            
-            folders.forEach(folder => {
-                if (folder !== 'all' && folder !== '根目录') {
-                    const button = document.createElement('button');
-                    button.className = 'filter-btn';
-                    button.dataset.folder = folder;
-                    button.textContent = folder;
-                    
-                    // 插入到"全部"按钮后面
-                    const allButton = filterContainer.querySelector('[data-folder="all"]');
-                    allButton.parentNode.insertBefore(button, allButton.nextSibling);
-                }
-            });
-        }
-        
-        // 渲染图片画廊
-        function renderGallery(images) {
-            const gallery = document.getElementById('imageGallery');
-            
-            if (images.length === 0) {
-                gallery.innerHTML = '<div class="no-results">没有找到匹配的图片</div>';
-                return;
-            }
-            
-            gallery.innerHTML = images.map(image => {
-                const category = getCategoryFromPath(image.path);
-                const folderName = category === '根目录' ? '根目录' : category;
-                
-                return `
-                    <div class="image-card" data-folder="${folderName}">
-                        <div class="image-container">
-                            <img src="${getImageUrl(image.path)}" alt="${image.name}" loading="lazy">
-                        </div>
-                        <div class="image-info">
-                            <div class="image-title">${image.name}</div>
-                            <div class="image-folder">
-                                <i class="fas fa-folder"></i>
-                                ${folderName}
-                            </div>
-                            <div class="image-details">
-                                <span>${image.size}</span>
-                                <span>${image.path}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-        
-        // 筛选图片
-        function filterImages() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const activeFolder = document.querySelector('.filter-btn.active').dataset.folder;
-            
-            // 更新文件夹指示器
-            document.getElementById('folderIndicator').textContent = 
-                `当前文件夹: ${activeFolder === 'all' ? '全部' : activeFolder}`;
-            
-            const filteredImages = mockImagesWithFolders.filter(image => {
-                const category = getCategoryFromPath(image.path);
-                const folderName = category === '根目录' ? '根目录' : category;
-                
-                const matchesSearch = image.name.toLowerCase().includes(searchTerm) || 
-                                     image.path.toLowerCase().includes(searchTerm);
-                const matchesFolder = activeFolder === 'all' || folderName === activeFolder;
-                
-                return matchesSearch && matchesFolder;
-            });
-            
-            renderGallery(filteredImages);
-        }
-        
-        // 初始化事件监听器
-        function initEventListeners() {
-            // 搜索框输入事件
-            document.getElementById('searchInput').addEventListener('input', filterImages);
-            
-            // 文件夹筛选按钮点击事件
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('filter-btn')) {
-                    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-                    e.target.classList.add('active');
-                    filterImages();
-                }
-            });
-        }
-        
-        // 页面加载完成后初始化
+        // 群成员数据（根据截图中的名字）
+        const members = [
+            { name: "搭上A...", status: "在线" },
+            { name: "小香猪...", status: "在线" },
+            { name: "登陆少...", status: "离线" },
+            { name: "树莓三...", status: "在线" },
+            { name: "十八朵...", status: "在线" },
+            { name: "不知立场", status: "在线" },
+            { name: "不能还...", status: "离线" },
+            { name: "云养俺妹", status: "在线" },
+            { name: "小妲极", status: "在线" },
+            { name: "余鲨鲨鲨", status: "在线" },
+            { name: "棍铲坤", status: "离线" },
+            { name: "鞍山小...", status: "在线" },
+            { name: "护腮宝", status: "在线" },
+            { name: "是真呱...", status: "在线" },
+            { name: "ovo", status: "在线" },
+            { name: "七咩", status: "离线" },
+            { name: "jtddhk...", status: "在线" },
+            { name: "婵姐这...", status: "在线", featured: true },
+            { name: "Jackey...", status: "在线" },
+            { name: "仙草山...", status: "在线" },
+            { name: "火龙果...", status: "在线" }
+        ];
+        
+        // 颜色列表用于头像背景
+        const avatarColors = [
+            "linear-gradient(135deg, #ff7e5f, #feb47b)",
+            "linear-gradient(135deg, #8e2de2, #4a00e0)",
+            "linear-gradient(135deg, #00b09b, #96c93d)",
+            "linear-gradient(135deg, #ff416c, #ff4b2b)",
+            "linear-gradient(135deg, #3494e6, #ec6ead)",
+            "linear-gradient(135deg, #1d976c, #93f9b9)",
+            "linear-gradient(135deg, #c471f5, #fa71cd)",
+            "linear-gradient(135deg, #36d1dc, #5b86e5)",
+            "linear-gradient(135deg, #ee9ca7, #ffdde1)",
+            "linear-gradient(135deg, #614385, #516395)"
+        ];
+        
+        // 生成成员卡片
         document.addEventListener('DOMContentLoaded', function() {
-            // 模拟API加载延迟
+            const container = document.getElementById('membersContainer');
+            
+            members.forEach((member, index) => {
+                const memberCard = document.createElement('div');
+                memberCard.className = 'member-card fade-in';
+                if (member.featured) {
+                    memberCard.classList.add('featured-member');
+                }
+                
+                // 随机选择头像颜色
+                const colorIndex = index % avatarColors.length;
+                const avatarBg = avatarColors[colorIndex];
+                
+                // 获取名字首字母或前两个字符作为头像内容
+                let avatarText = member.name.replace(/[^a-zA-Z\u4e00-\u9fa5]/g, '').substring(0, 2);
+                if (!avatarText) avatarText = member.name.substring(0, 2);
+                
+                // 设置延迟动画
+                memberCard.style.animationDelay = `${index * 0.05}s`;
+                
+                memberCard.innerHTML = `
+                    ${member.featured ? '<div class="featured-badge">主角</div>' : ''}
+                    <div class="member-avatar" style="background: ${avatarBg}">
+                        ${avatarText}
+                    </div>
+                    <div class="member-name">${member.name}</div>
+                    <div class="member-status">${member.status}</div>
+                `;
+                
+                container.appendChild(memberCard);
+            });
+            
+            // 添加悬停效果
+            const memberCards = document.querySelectorAll('.member-card');
+            memberCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    const avatar = this.querySelector('.member-avatar');
+                    const hue = Math.floor(Math.random() * 360);
+                    avatar.style.filter = `hue-rotate(${hue}deg) brightness(1.1)`;
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    const avatar = this.querySelector('.member-avatar');
+                    avatar.style.filter = 'none';
+                });
+            });
+            
+            // 数字滚动效果
+            function animateCount(element, target) {
+                let current = 0;
+                const increment = target / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    element.textContent = Math.floor(current);
+                }, 20);
+            }
+            
+            // 启动数字动画
             setTimeout(() => {
-                // 获取文件夹分类并渲染筛选器
-                const folders = getUniqueFolders(mockImagesWithFolders);
-                renderFolderFilters(folders);
-                
-                // 渲染图片画廊
-                renderGallery(mockImagesWithFolders);
-                
-                // 初始化事件监听
-                initEventListeners();
-            }, 1500);
+                animateCount(document.getElementById('member-count'), 21);
+            }, 500);
         });
-        
-        // 实际使用时，取消注释以下函数来从GitHub API获取真实的图片列表
-        async function loadImagesFromGitHub() {
-            try {
-                const apiUrl = `https://api.github.com/repos/${config.username}/${config.repo}/git/trees/${config.branch}?recursive=1`;
-                const response = await fetch(apiUrl);
-                const data = await response.json();
-                
-                // 过滤出图片文件
-                const imageFiles = data.tree.filter(file => 
-                    file.path.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)
-                );
-                
-                // 转换为需要的格式
-                const images = imageFiles.map(file => ({
-                    name: file.path.split('/').pop(),
-                    path: file.path,
-                    size: file.size ? `${(file.size / 1024 / 1024).toFixed(1)} MB` : '未知大小'
-                }));
-                
-                return images;
-            } catch (error) {
-                console.error('从GitHub加载图片失败:', error);
-                return [];
-            }
-        }
-        
-        // 使用真实数据替换模拟数据
-        document.addEventListener('DOMContentLoaded', async function() {
-            const realImages = await loadImagesFromGitHub();
-            if (realImages.length > 0) {
-                const folders = getUniqueFolders(realImages);
-                renderFolderFilters(folders);
-                renderGallery(realImages);
-                initEventListeners();
-            }
-        });
-        */
     </script>
 </body>
 </html>
